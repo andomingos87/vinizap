@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import TabsNavigation, { TabType } from '@/components/layout/TabsNavigation';
@@ -19,7 +18,6 @@ const Index = () => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
-  // Reset selections when changing tabs
   useEffect(() => {
     if (activeTab !== 'chat') {
       setSelectedContactId(null);
@@ -27,7 +25,6 @@ const Index = () => {
     }
   }, [activeTab]);
 
-  // Load conversation when contact is selected
   useEffect(() => {
     if (selectedContactId) {
       const contact = contacts.find(c => c.id === selectedContactId) || null;
@@ -62,7 +59,6 @@ const Index = () => {
     
     setCurrentMessages(prev => [...prev, newMessage]);
     
-    // Simulate message delivery
     setTimeout(() => {
       setCurrentMessages(prev => 
         prev.map(msg => 
@@ -89,7 +85,6 @@ const Index = () => {
     }
   };
 
-  // Main content based on active tab
   const renderMainContent = () => {
     switch (activeTab) {
       case 'chat':
@@ -128,7 +123,10 @@ const Index = () => {
         return (
           <div className="flex flex-grow overflow-hidden">
             <div className="w-full">
-              <FunnelsList funnels={funnels} />
+              <FunnelsList 
+                funnels={funnels} 
+                templates={templates}
+              />
             </div>
           </div>
         );

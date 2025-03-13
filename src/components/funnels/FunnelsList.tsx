@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Funnel } from '@/types';
-import { Search, PlusCircle, Filter, MoreVertical, ArrowRight } from 'lucide-react';
+import { Funnel, Template } from '@/types';
+import { Search, PlusCircle, MoreVertical, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -13,26 +13,64 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import CreateFunnelModal from './CreateFunnelModal';
+import { useToast } from "@/hooks/use-toast";
 
 interface FunnelsListProps {
   funnels: Funnel[];
   onNewFunnel?: () => void;
   onEditFunnel?: (funnelId: string) => void;
   onSelectFunnel?: (funnelId: string) => void;
+  templates?: Template[];
 }
 
 const FunnelsList: React.FC<FunnelsListProps> = ({ 
   funnels,
   onNewFunnel,
   onEditFunnel,
-  onSelectFunnel
+  onSelectFunnel,
+  templates = []
 }) => {
+  const { toast } = useToast();
   const [searchValue, setSearchValue] = useState('');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [currentFunnels, setCurrentFunnels] = useState<Funnel[]>(funnels);
 
-  const filteredFunnels = funnels.filter(funnel => {
+  const filteredFunnels = currentFunnels.filter(funnel => {
     return funnel.name.toLowerCase().includes(searchValue.toLowerCase()) || 
            funnel.description.toLowerCase().includes(searchValue.toLowerCase());
   });
+
+  const handleOpenCreateModal = () => {
+    setIsCreateModalOpen(true);
+    if (onNewFunnel) {
+      onNewFunnel();
+    }
+  };
+
+  const handleCloseCreateModal = () => {
+    setIsCreateModalOpen(false);
+  };
+
+  const handleSaveFunnel = (funnelData: Omit<Funnel, "id">) => {
+    const newFunnel: Funnel = {
+      ...funnelData,
+      id: crypto.randomUUID(),
+    };
+
+    setCurrentFunnels([...currentFunnels, newFunnel]);
+    setIsCreateModalOpen(false);
+    
+    toast({
+      title: "Funil criado",
+      description: `${newFunnel.name} foi criado com sucesso`,
+    });
+  };
+
+  const templateOptions = templates.map(template => ({
+    id: template.id,
+    name: template.name
+  }));
 
   return (
     <div className="h-full flex flex-col bg-white border-r">
@@ -44,7 +82,7 @@ const FunnelsList: React.FC<FunnelsListProps> = ({
             variant="ghost" 
             size="icon" 
             className="h-8 w-8"
-            onClick={onNewFunnel}
+            onClick={handleOpenCreateModal}
           >
             <PlusCircle className="h-5 w-5 text-gray-500" />
           </Button>
@@ -134,6 +172,13 @@ const FunnelsList: React.FC<FunnelsListProps> = ({
           </div>
         )}
       </div>
+
+      <CreateFunnelModal
+        isOpen={isCreateModalOpen}
+        onClose={handleCloseCreateModal}
+        onSave={handleSaveFunnel}
+        templates={templateOptions}
+      />
     </div>
   );
 };
