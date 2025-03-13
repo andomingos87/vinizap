@@ -23,6 +23,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import CreateTemplateModal from './CreateTemplateModal';
+import { useToast } from "@/hooks/use-toast";
 
 interface TemplatesListProps {
   templates: Template[];
@@ -39,6 +41,8 @@ const TemplatesList: React.FC<TemplatesListProps> = ({
 }) => {
   const [searchValue, setSearchValue] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<TemplateCategory | 'all'>('all');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const { toast } = useToast();
 
   const categories: TemplateCategory[] = ['Atendimento', 'Vendas', 'Financeiro', 'Outros'];
 
@@ -70,6 +74,27 @@ const TemplatesList: React.FC<TemplatesListProps> = ({
     }
   };
 
+  const handleCreateTemplate = (templateData: any) => {
+    // In a real application, this would send the data to an API
+    const newTemplate: Template = {
+      id: `template-${Date.now()}`,
+      name: templateData.name,
+      content: templateData.content,
+      type: templateData.type,
+      category: templateData.category,
+      fileUrl: templateData.fileUrl,
+    };
+    
+    // Normally you would update the state with the new template
+    // This is just simulating that functionality
+    toast({
+      title: "Template criado",
+      description: `Template "${templateData.name}" foi criado com sucesso.`,
+    });
+    
+    setIsCreateModalOpen(false);
+  };
+
   return (
     <div className="h-full flex flex-col bg-white border-r">
       {/* Header */}
@@ -80,7 +105,7 @@ const TemplatesList: React.FC<TemplatesListProps> = ({
             variant="ghost" 
             size="icon" 
             className="h-8 w-8"
-            onClick={onNewTemplate}
+            onClick={() => setIsCreateModalOpen(true)}
           >
             <PlusCircle className="h-5 w-5 text-gray-500" />
           </Button>
@@ -191,6 +216,13 @@ const TemplatesList: React.FC<TemplatesListProps> = ({
           </div>
         )}
       </div>
+
+      {/* Create Template Modal */}
+      <CreateTemplateModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSave={handleCreateTemplate}
+      />
     </div>
   );
 };
