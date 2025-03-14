@@ -25,6 +25,7 @@ export interface Contact {
   lastSeen: Date;
   isGroup?: boolean;
   participants?: number;
+  isAddressBook?: boolean; // Flag to identify contacts from the address book
   unreadCount: number;
   lastMessage?: Message;
 }

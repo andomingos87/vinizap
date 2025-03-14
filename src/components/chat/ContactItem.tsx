@@ -2,7 +2,7 @@
 import React from 'react';
 import { Contact } from '@/types';
 import { cn } from '@/lib/utils';
-import { CheckCheck } from 'lucide-react';
+import { CheckCheck, Phone } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -44,32 +44,45 @@ const ContactItem: React.FC<ContactItemProps> = ({
           <AvatarImage src={contact.avatar} alt={contact.name} />
           <AvatarFallback>{getInitials(contact.name)}</AvatarFallback>
         </Avatar>
-        {contact.status === 'online' && (
+        {contact.status === 'online' && !contact.isAddressBook && (
           <span className="absolute bottom-0 right-0 w-3 h-3 bg-vinizap-primary rounded-full border-2 border-white"></span>
+        )}
+        {contact.isAddressBook && (
+          <div className="absolute bottom-0 right-0 w-5 h-5 bg-gray-100 rounded-full border-2 border-white flex items-center justify-center">
+            <Phone className="h-3 w-3 text-gray-600" />
+          </div>
         )}
       </div>
       
       <div className="ml-3 flex-grow overflow-hidden">
         <div className="flex justify-between items-center">
           <span className="font-medium truncate">{contact.name}</span>
-          <span className="text-xs text-gray-500">{formattedTime}</span>
+          {!contact.isAddressBook && (
+            <span className="text-xs text-gray-500">{formattedTime}</span>
+          )}
         </div>
         
         <div className="flex justify-between items-center mt-1">
-          <div className="flex items-center text-gray-500 text-sm truncate max-w-[70%]">
-            {contact.lastMessage?.senderId === 'user' && (
-              <CheckCheck className={cn(
-                "w-3.5 h-3.5 mr-1",
-                contact.lastMessage.status === 'read' ? "text-blue-500" : "text-gray-400"
-              )} />
-            )}
-            <span className="truncate">{contact.lastMessage?.content}</span>
-          </div>
-          
-          {contact.unreadCount > 0 && (
-            <span className="bg-vinizap-primary text-white text-xs rounded-full px-2 py-0.5 min-w-[20px] text-center">
-              {contact.unreadCount}
-            </span>
+          {contact.isAddressBook ? (
+            <span className="text-sm text-gray-500 truncate">Contato da agenda</span>
+          ) : (
+            <>
+              <div className="flex items-center text-gray-500 text-sm truncate max-w-[70%]">
+                {contact.lastMessage?.senderId === 'user' && (
+                  <CheckCheck className={cn(
+                    "w-3.5 h-3.5 mr-1",
+                    contact.lastMessage.status === 'read' ? "text-blue-500" : "text-gray-400"
+                  )} />
+                )}
+                <span className="truncate">{contact.lastMessage?.content}</span>
+              </div>
+              
+              {contact.unreadCount > 0 && (
+                <span className="bg-vinizap-primary text-white text-xs rounded-full px-2 py-0.5 min-w-[20px] text-center">
+                  {contact.unreadCount}
+                </span>
+              )}
+            </>
           )}
         </div>
       </div>

@@ -1,4 +1,3 @@
-
 import { Contact, Message, Template, Funnel } from "@/types";
 
 export const contacts: Contact[] = [
@@ -83,6 +82,42 @@ export const contacts: Contact[] = [
       senderId: "lucas",
       status: "delivered"
     }
+  },
+  {
+    id: "a1",
+    name: "Pedro Santos",
+    avatar: "https://randomuser.me/api/portraits/men/10.jpg",
+    status: "offline",
+    lastSeen: new Date(),
+    isAddressBook: true,
+    unreadCount: 0
+  },
+  {
+    id: "a2",
+    name: "Amanda Lima",
+    avatar: "https://randomuser.me/api/portraits/women/11.jpg",
+    status: "offline",
+    lastSeen: new Date(),
+    isAddressBook: true,
+    unreadCount: 0
+  },
+  {
+    id: "a3",
+    name: "Ricardo Alves",
+    avatar: "https://randomuser.me/api/portraits/men/12.jpg",
+    status: "offline",
+    lastSeen: new Date(),
+    isAddressBook: true,
+    unreadCount: 0
+  },
+  {
+    id: "a4",
+    name: "Beatriz Mendes",
+    avatar: "https://randomuser.me/api/portraits/women/13.jpg",
+    status: "offline",
+    lastSeen: new Date(),
+    isAddressBook: true,
+    unreadCount: 0
   }
 ];
 

@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Contact } from '@/types';
-import { Search, MessageSquarePlus, Filter, User, Users } from 'lucide-react';
+import { Search, MessageSquarePlus, Filter, User, Users, AddressBook } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -19,16 +19,18 @@ const ContactsList: React.FC<ContactsListProps> = ({
   onSelectContact 
 }) => {
   const [searchValue, setSearchValue] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'all' | 'direct' | 'groups'>('all');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'direct' | 'groups' | 'address'>('all');
 
   const filteredContacts = contacts.filter(contact => {
     const matchesSearch = contact.name.toLowerCase().includes(searchValue.toLowerCase());
     
     switch (activeFilter) {
       case 'direct':
-        return matchesSearch && !contact.isGroup;
+        return matchesSearch && !contact.isGroup && !contact.isAddressBook;
       case 'groups':
         return matchesSearch && contact.isGroup;
+      case 'address':
+        return matchesSearch && contact.isAddressBook;
       default:
         return matchesSearch;
     }
@@ -57,12 +59,12 @@ const ContactsList: React.FC<ContactsListProps> = ({
       </div>
 
       {/* Filters */}
-      <div className="p-2 border-b flex space-x-1">
+      <div className="p-2 border-b flex space-x-1 overflow-x-auto">
         <Button 
           variant="ghost"
           size="sm"
           className={cn(
-            "flex-1 h-8 text-xs rounded-full",
+            "flex-1 h-8 text-xs rounded-full whitespace-nowrap",
             activeFilter === 'all' && "bg-vinizap-primary text-white hover:text-white hover:bg-vinizap-primary/90"
           )}
           onClick={() => setActiveFilter('all')}
@@ -74,7 +76,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
           variant="ghost"
           size="sm"
           className={cn(
-            "flex-1 h-8 text-xs rounded-full",
+            "flex-1 h-8 text-xs rounded-full whitespace-nowrap",
             activeFilter === 'direct' && "bg-vinizap-primary text-white hover:text-white hover:bg-vinizap-primary/90"
           )}
           onClick={() => setActiveFilter('direct')}
@@ -86,13 +88,25 @@ const ContactsList: React.FC<ContactsListProps> = ({
           variant="ghost"
           size="sm"
           className={cn(
-            "flex-1 h-8 text-xs rounded-full",
+            "flex-1 h-8 text-xs rounded-full whitespace-nowrap",
             activeFilter === 'groups' && "bg-vinizap-primary text-white hover:text-white hover:bg-vinizap-primary/90"
           )}
           onClick={() => setActiveFilter('groups')}
         >
           <Users className="h-3.5 w-3.5 mr-1" />
           Grupos
+        </Button>
+        <Button 
+          variant="ghost"
+          size="sm"
+          className={cn(
+            "flex-1 h-8 text-xs rounded-full whitespace-nowrap",
+            activeFilter === 'address' && "bg-vinizap-primary text-white hover:text-white hover:bg-vinizap-primary/90"
+          )}
+          onClick={() => setActiveFilter('address')}
+        >
+          <AddressBook className="h-3.5 w-3.5 mr-1" />
+          Agenda
         </Button>
       </div>
 
