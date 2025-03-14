@@ -1,4 +1,3 @@
-
 // Message types
 export type MessageType = 'text' | 'image' | 'video' | 'audio' | 'file';
 export type MessageStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
@@ -28,6 +27,7 @@ export interface Contact {
   isAddressBook?: boolean; // Flag to identify contacts from the address book
   unreadCount: number;
   lastMessage?: Message;
+  phone?: string; // Adding the phone property as optional
 }
 
 // Template types
