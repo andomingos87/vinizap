@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Legend, Tooltip, LineChart, Line } from 'recharts';
-import { Users, Clock, AlertTriangle, CreditCard, TrendingUp, MessageSquare } from 'lucide-react';
+import { Users, Clock, AlertTriangle, CreditCard, TrendingUp, MessageSquare, LayoutDashboard, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 // Mock data for the dashboard
@@ -46,7 +45,7 @@ const Dashboard = () => {
               asChild
             >
               <Link to="/">
-                <MessageSquare className="h-5 w-5 text-vinizap-primary" />
+                <ArrowLeft className="h-5 w-5 text-vinizap-primary" />
               </Link>
             </Button>
             <h1 className="text-3xl font-bold">Dashboard de Vendas</h1>

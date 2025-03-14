@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { MessageSquare, FileText, Filter } from 'lucide-react';
+import { MessageSquare, FileText, Filter, LayoutDashboard } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
 
 export type TabType = 'chat' | 'templates' | 'funnels';
 
@@ -21,7 +22,7 @@ const TabsNavigation: React.FC<TabsNavigationProps> = ({
   ];
 
   return (
-    <div className="flex w-full justify-center bg-white border-b shadow-sm">
+    <div className="flex w-full justify-between bg-white border-b shadow-sm px-4">
       <div className="flex">
         {tabs.map((tab) => (
           <button
@@ -41,6 +42,15 @@ const TabsNavigation: React.FC<TabsNavigationProps> = ({
             {tab.name}
           </button>
         ))}
+      </div>
+      <div className="flex items-center">
+        <Link 
+          to="/dashboard" 
+          className="flex items-center px-4 py-3 text-sm font-medium text-gray-500 hover:text-vinizap-primary transition-colors"
+        >
+          <LayoutDashboard className="w-4 h-4 mr-2 text-gray-400" />
+          Dashboard
+        </Link>
       </div>
     </div>
   );
