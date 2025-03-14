@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Contact } from '@/types';
-import { Search, MessageSquarePlus, Filter, User, Users, AddressBook } from 'lucide-react';
+import { Search, MessageSquarePlus, Filter, User, Users, Book } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -105,7 +105,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
           )}
           onClick={() => setActiveFilter('address')}
         >
-          <AddressBook className="h-3.5 w-3.5 mr-1" />
+          <Book className="h-3.5 w-3.5 mr-1" />
           Agenda
         </Button>
       </div>
