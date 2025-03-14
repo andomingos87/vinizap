@@ -5,10 +5,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Progress } from '@/components/ui/progress';
 import { Users, UserCheck, UserX, Wallet } from 'lucide-react';
 import MetricCard from './MetricCard';
-import { Contact } from '@/types';
+import { AdminUser } from '@/types';
 
 interface OverviewTabProps {
-  mockUsers: Contact[];
+  mockUsers: AdminUser[];
   totalUsers: number;
   activeUsers: number;
   premiumUsers: number;
@@ -70,7 +70,7 @@ const OverviewTab = ({ mockUsers, totalUsers, activeUsers, premiumUsers }: Overv
                         {user.status === 'online' ? 'Ativo' : 'Inativo'}
                       </span>
                     </TableCell>
-                    <TableCell>{(user as any).plan}</TableCell>
+                    <TableCell>{user.plan}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

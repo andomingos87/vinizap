@@ -1,3 +1,4 @@
+
 // Message types
 export type MessageType = 'text' | 'image' | 'video' | 'audio' | 'file';
 export type MessageStatus = 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
@@ -28,6 +29,19 @@ export interface Contact {
   unreadCount: number;
   lastMessage?: Message;
   phone?: string; // Adding the phone property as optional
+}
+
+// Admin types
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  status: 'online' | 'offline';
+  plan: string;
+  lastActive: string;
+  avatar: string;
+  lastSeen: Date;
+  unreadCount: number;
 }
 
 // Template types

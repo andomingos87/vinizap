@@ -10,7 +10,7 @@ import { mockUsers } from '@/data/adminMockData';
 const AdminDashboard = () => {
   const totalUsers = mockUsers.length;
   const activeUsers = mockUsers.filter(user => user.status === 'online').length;
-  const premiumUsers = mockUsers.filter(user => (user as any).plan === 'Premium').length;
+  const premiumUsers = mockUsers.filter(user => user.plan === 'Premium').length;
   
   return (
     <MainLayout>
