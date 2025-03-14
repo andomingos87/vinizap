@@ -197,7 +197,7 @@ const OnboardingModal = ({ open, onOpenChange }: OnboardingModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]" showCloseButton={false}>
+      <DialogContent className="sm:max-w-[500px]">
         {renderStepContent()}
         <StepIndicator currentStep={step} totalSteps={totalSteps} />
       </DialogContent>
