@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import TabsNavigation, { TabType } from '@/components/layout/TabsNavigation';
@@ -5,8 +6,10 @@ import ContactsList from '@/components/chat/ContactsList';
 import ConversationPanel from '@/components/chat/ConversationPanel';
 import TemplatesList from '@/components/templates/TemplatesList';
 import FunnelsList from '@/components/funnels/FunnelsList';
+import OnboardingModal from '@/components/onboarding/OnboardingModal';
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/contexts/AuthContext";
 import { Contact, Message } from '@/types';
 import { contacts, conversations, templates, funnels } from '@/data/mockData';
 
@@ -15,8 +18,19 @@ const Index = () => {
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
   const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const { user } = useAuth();
+
+  // Show onboarding modal when user logs in
+  useEffect(() => {
+    if (user) {
+      // In a real app, you might want to check if user has completed onboarding before
+      // For now, we'll just show it every time they log in
+      setShowOnboarding(true);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (activeTab !== 'chat') {
@@ -140,6 +154,12 @@ const Index = () => {
       <div className="h-screen flex flex-col">
         <TabsNavigation activeTab={activeTab} onChangeTab={setActiveTab} />
         {renderMainContent()}
+
+        {/* Onboarding Modal */}
+        <OnboardingModal 
+          open={showOnboarding} 
+          onOpenChange={setShowOnboarding} 
+        />
       </div>
     </MainLayout>
   );
