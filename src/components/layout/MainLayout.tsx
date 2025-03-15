@@ -1,8 +1,8 @@
-import React, { ReactNode } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import React, { ReactNode, useMemo, useCallback, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import UserMenu from './UserMenu';
-import { MessageSquare, FileText, Filter } from 'lucide-react';
+import Navigation from './Navigation';
 import { cn } from '@/lib/utils';
 
 export type TabType = 'chat' | 'templates' | 'funnels';
@@ -11,34 +11,58 @@ interface MainLayoutProps {
   children: ReactNode;
   activeTab?: TabType;
   onChangeTab?: (tab: TabType) => void;
+  viewMode?: 'grid' | 'list';
+  onViewModeChange?: (mode: 'grid' | 'list') => void;
 }
 
-const MainLayout = ({ children, activeTab, onChangeTab }: MainLayoutProps) => {
+// Loading spinner component
+const LoadingSpinner = React.memo(() => (
+  <div className="flex items-center justify-center w-full h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+  </div>
+));
+
+LoadingSpinner.displayName = 'LoadingSpinner';
+
+const MainLayout = ({ 
+  children, 
+  activeTab, 
+  onChangeTab,
+  viewMode = 'grid',
+  onViewModeChange
+}: MainLayoutProps) => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Determine active tab from URL if not provided
-  const currentPath = location.pathname;
-  const isDashboard = currentPath.includes('/dashboard');
-  const currentTab = activeTab || 
-    (currentPath.includes('/chat') ? 'chat' : 
-     currentPath.includes('/templates') ? 'templates' : 
-     currentPath.includes('/funnels') ? 'funnels' : undefined);
+  // Determine active tab from URL if not provided - memoized for performance
+  const currentTab = useMemo(() => {
+    const currentPath = location.pathname;
+    return activeTab || 
+      (currentPath.includes('/chat') ? 'chat' : 
+       currentPath.includes('/templates') ? 'templates' : 
+       currentPath.includes('/funnels') ? 'funnels' : undefined);
+  }, [activeTab, location.pathname]);
 
-  // Navigation tabs
-  const navItems = [
-    { id: 'chat' as const, name: 'Chat', icon: MessageSquare, path: '/' },
-    { id: 'templates' as const, name: 'Templates', icon: FileText, path: '/' },
-    { id: 'funnels' as const, name: 'Funis', icon: Filter, path: '/' }
-  ];
+  // Determine if we're on dashboard page - memoized for performance
+  const isDashboard = useMemo(() => 
+    location.pathname.includes('/dashboard'), 
+    [location.pathname]
+  );
 
-  // Handle tab change
-  const handleTabChange = (tab: TabType) => {
+  // Handle tab change with useCallback for better performance
+  const handleTabChange = useCallback((tab: TabType) => {
     if (onChangeTab) {
       onChangeTab(tab);
     }
-  };
+  }, [onChangeTab]);
+
+  // Handle view mode change
+  const handleViewModeChange = useCallback((mode: 'grid' | 'list') => {
+    if (onViewModeChange) {
+      onViewModeChange(mode);
+    }
+  }, [onViewModeChange]);
 
   // Redirect to auth page if not logged in
   React.useEffect(() => {
@@ -48,11 +72,7 @@ const MainLayout = ({ children, activeTab, onChangeTab }: MainLayoutProps) => {
   }, [user, loading, navigate]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center w-full h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
@@ -65,30 +85,15 @@ const MainLayout = ({ children, activeTab, onChangeTab }: MainLayoutProps) => {
           </div>
         </div>
         
-        {/* Navigation Tabs - Hide on Dashboard */}
+        {/* Navigation - Hide on Dashboard */}
         {!isDashboard && (
-          <div className="flex mt-2 -mb-0.5">
-            <div className="flex-1 flex">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  className={cn(
-                    "flex items-center px-4 py-2 text-sm font-medium border-b-2 transition-colors",
-                    currentTab === item.id 
-                      ? "border-vinizap-primary text-vinizap-dark" 
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                  )}
-                  onClick={() => handleTabChange(item.id)}
-                >
-                  <item.icon className={cn(
-                    "w-4 h-4 mr-2",
-                    currentTab === item.id ? "text-vinizap-primary" : "text-gray-400"
-                  )} />
-                  {item.name}
-                </button>
-              ))}
-            </div>
-          </div>
+          <Navigation 
+            currentTab={currentTab} 
+            onTabChange={handleTabChange}
+            viewMode={viewMode}
+            onViewModeChange={handleViewModeChange}
+            showViewToggle={currentTab === 'templates'}
+          />
         )}
       </header>
       <main className="flex-1 overflow-hidden">
@@ -98,4 +103,4 @@ const MainLayout = ({ children, activeTab, onChangeTab }: MainLayoutProps) => {
   );
 };
 
-export default MainLayout;
+export default React.memo(MainLayout);

@@ -154,7 +154,7 @@ const Index = () => {
 
   return (
     <MainLayout activeTab={activeTab} onChangeTab={handleTabChange}>
-      <div className="h-screen flex flex-col">
+      <div className="h-full flex flex-col overflow-hidden">
         {renderMainContent()}
 
         {/* Onboarding Modal */}

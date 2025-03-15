@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Contact, Message } from '@/types';
 import { Paperclip, Send, Smile, Mic, Image as ImageIcon, FileText, X, UserPlus, Check } from 'lucide-react';
@@ -387,7 +386,7 @@ const ConversationPanel: React.FC<ConversationPanelProps> = ({
         </div>}
 
       {/* Input area */}
-      <div className="bg-white border-t p-3">
+      <div className="bg-white border-t p-3 flex-shrink-0">
         <div className="flex items-center gap-2">
           <div className="flex gap-1">
             <Button variant="ghost" size="icon" className="h-9 w-9 flex-shrink-0 text-gray-500 hover:text-vinizap-primary hover:bg-gray-100 rounded-full" onClick={() => setShowTemplates(!showTemplates)}>

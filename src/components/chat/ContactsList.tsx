@@ -24,9 +24,9 @@ const ContactsList: React.FC<ContactsListProps> = ({
   });
 
   return (
-    <div className="h-full flex flex-col bg-white border-r">
+    <div className="h-full flex flex-col bg-white border-r overflow-hidden">
       {/* Header */}
-      <div className="p-3 border-b">
+      <div className="p-3 border-b flex-shrink-0">
         <div className="flex items-center mb-3">
           <h2 className="text-lg font-semibold flex-grow">Conversas</h2>
           <Button variant="ghost" size="icon" className="h-8 w-8">
