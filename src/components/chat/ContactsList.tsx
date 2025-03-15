@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Contact } from '@/types';
-import { Search, MessageSquarePlus, Filter, User, Users, Book } from 'lucide-react';
+import { Search, MessageSquarePlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -19,21 +18,9 @@ const ContactsList: React.FC<ContactsListProps> = ({
   onSelectContact 
 }) => {
   const [searchValue, setSearchValue] = useState('');
-  const [activeFilter, setActiveFilter] = useState<'all' | 'direct' | 'groups' | 'address'>('all');
 
   const filteredContacts = contacts.filter(contact => {
-    const matchesSearch = contact.name.toLowerCase().includes(searchValue.toLowerCase());
-    
-    switch (activeFilter) {
-      case 'direct':
-        return matchesSearch && !contact.isGroup && !contact.isAddressBook;
-      case 'groups':
-        return matchesSearch && contact.isGroup;
-      case 'address':
-        return matchesSearch && contact.isAddressBook;
-      default:
-        return matchesSearch;
-    }
+    return contact.name.toLowerCase().includes(searchValue.toLowerCase());
   });
 
   return (
@@ -56,58 +43,6 @@ const ContactsList: React.FC<ContactsListProps> = ({
             onChange={(e) => setSearchValue(e.target.value)}
           />
         </div>
-      </div>
-
-      {/* Filters */}
-      <div className="p-2 border-b flex space-x-1 overflow-x-auto">
-        <Button 
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "flex-1 h-8 text-xs rounded-full whitespace-nowrap",
-            activeFilter === 'all' && "bg-vinizap-primary text-white hover:text-white hover:bg-vinizap-primary/90"
-          )}
-          onClick={() => setActiveFilter('all')}
-        >
-          <Filter className="h-3.5 w-3.5 mr-1" />
-          Todos
-        </Button>
-        <Button 
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "flex-1 h-8 text-xs rounded-full whitespace-nowrap",
-            activeFilter === 'direct' && "bg-vinizap-primary text-white hover:text-white hover:bg-vinizap-primary/90"
-          )}
-          onClick={() => setActiveFilter('direct')}
-        >
-          <User className="h-3.5 w-3.5 mr-1" />
-          Diretos
-        </Button>
-        <Button 
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "flex-1 h-8 text-xs rounded-full whitespace-nowrap",
-            activeFilter === 'groups' && "bg-vinizap-primary text-white hover:text-white hover:bg-vinizap-primary/90"
-          )}
-          onClick={() => setActiveFilter('groups')}
-        >
-          <Users className="h-3.5 w-3.5 mr-1" />
-          Grupos
-        </Button>
-        <Button 
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "flex-1 h-8 text-xs rounded-full whitespace-nowrap",
-            activeFilter === 'address' && "bg-vinizap-primary text-white hover:text-white hover:bg-vinizap-primary/90"
-          )}
-          onClick={() => setActiveFilter('address')}
-        >
-          <Book className="h-3.5 w-3.5 mr-1" />
-          Agenda
-        </Button>
       </div>
 
       {/* Contact list */}
