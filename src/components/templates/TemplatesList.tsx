@@ -151,40 +151,42 @@ const TemplatesList: React.FC<TemplatesListProps> = ({
           </div>
         </div>
         
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            className="pl-9 bg-gray-100 border-0 focus-visible:ring-1 focus-visible:ring-vinizap-primary"
-            placeholder="Pesquisar templates"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-          />
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              className="pl-9 bg-gray-100 border-0 focus-visible:ring-1 focus-visible:ring-vinizap-primary"
+              placeholder="Pesquisar templates"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+          </div>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="h-9 gap-1 whitespace-nowrap">
+                <Filter className="h-3.5 w-3.5" />
+                {categoryFilter === 'all' ? 'Todas categorias' : categoryFilter}
+                <ChevronDown className="h-3.5 w-3.5 ml-1" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuRadioGroup value={categoryFilter} onValueChange={(value: any) => setCategoryFilter(value)}>
+                <DropdownMenuRadioItem value="all">Todas categorias</DropdownMenuRadioItem>
+                <DropdownMenuSeparator />
+                {categories.map((category) => (
+                  <DropdownMenuRadioItem key={category} value={category}>
+                    {category}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="p-2 border-b flex justify-between items-center">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 gap-1">
-              <Filter className="h-3.5 w-3.5" />
-              {categoryFilter === 'all' ? 'Todas categorias' : categoryFilter}
-              <ChevronDown className="h-3.5 w-3.5 ml-1" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuRadioGroup value={categoryFilter} onValueChange={(value: any) => setCategoryFilter(value)}>
-              <DropdownMenuRadioItem value="all">Todas categorias</DropdownMenuRadioItem>
-              <DropdownMenuSeparator />
-              {categories.map((category) => (
-                <DropdownMenuRadioItem key={category} value={category}>
-                  {category}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        
+      <div className="p-2 border-b flex justify-end">
         <div className="text-xs text-gray-500">
           {filteredTemplates.length} {filteredTemplates.length === 1 ? 'template' : 'templates'}
         </div>

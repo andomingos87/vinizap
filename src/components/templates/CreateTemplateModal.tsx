@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -25,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TemplateType, TemplateCategory } from "@/types";
+import { cn } from "@/lib/utils";
 
 const templateSchema = z.object({
   name: z.string().min(3, { message: "O nome deve ter pelo menos 3 caracteres" }),
@@ -139,8 +139,11 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({
                       <Button
                         key={option.value}
                         type="button"
-                        variant={field.value === option.value ? "default" : "outline"}
-                        className="flex flex-col h-auto py-3 px-2 gap-1"
+                        variant="outline"
+                        className={cn(
+                          "flex flex-col h-auto py-3 px-2 gap-1",
+                          field.value === option.value && "border-vinizap-primary text-vinizap-primary"
+                        )}
                         onClick={() => field.onChange(option.value)}
                       >
                         {option.icon}
