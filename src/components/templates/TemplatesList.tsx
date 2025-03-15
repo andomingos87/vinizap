@@ -1,16 +1,12 @@
-
 import React, { useState } from 'react';
 import { Template, TemplateCategory } from '@/types';
 import { 
   Search, 
   PlusCircle, 
-  MessageSquare, 
-  Image, 
-  Video, 
-  FileText, 
-  Mic,
+  LayoutGrid, 
+  List,
   Filter,
-  MoreVertical 
+  ChevronDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,11 +15,14 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
 import CreateTemplateModal from './CreateTemplateModal';
+import TemplateViewModal from './TemplateViewModal';
+import TemplateCard from './TemplateCard';
 import { useToast } from "@/hooks/use-toast";
 
 interface TemplatesListProps {
@@ -41,7 +40,10 @@ const TemplatesList: React.FC<TemplatesListProps> = ({
 }) => {
   const [searchValue, setSearchValue] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<TemplateCategory | 'all'>('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const { toast } = useToast();
 
   const categories: TemplateCategory[] = ['Atendimento', 'Vendas', 'Financeiro', 'Outros'];
@@ -56,23 +58,6 @@ const TemplatesList: React.FC<TemplatesListProps> = ({
       return matchesSearch && template.category === categoryFilter;
     }
   });
-
-  const getIconByType = (type: Template['type']) => {
-    switch (type) {
-      case 'text':
-        return <MessageSquare className="h-5 w-5 text-blue-500" />;
-      case 'image':
-        return <Image className="h-5 w-5 text-green-500" />;
-      case 'video':
-        return <Video className="h-5 w-5 text-red-500" />;
-      case 'audio':
-        return <Mic className="h-5 w-5 text-purple-500" />;
-      case 'file':
-        return <FileText className="h-5 w-5 text-orange-500" />;
-      default:
-        return <MessageSquare className="h-5 w-5 text-gray-500" />;
-    }
-  };
 
   const handleCreateTemplate = (templateData: any) => {
     // In a real application, this would send the data to an API
@@ -95,20 +80,75 @@ const TemplatesList: React.FC<TemplatesListProps> = ({
     setIsCreateModalOpen(false);
   };
 
+  const handleSaveTemplate = (updatedTemplate: Template) => {
+    // In a real application, this would send the data to an API to update the template
+    // For now, we'll just show a toast
+    toast({
+      title: "Template atualizado",
+      description: `Template "${updatedTemplate.name}" foi atualizado com sucesso.`,
+    });
+    
+    setIsViewModalOpen(false);
+  };
+
+  const handleDeleteTemplate = (templateId: string) => {
+    // In a real application, this would send a request to delete the template
+    // For now, we'll just show a toast
+    toast({
+      title: "Template excluído",
+      description: "O template foi excluído com sucesso.",
+      variant: "destructive",
+    });
+    
+    setIsViewModalOpen(false);
+  };
+
+  const handleViewTemplate = (template: Template) => {
+    setSelectedTemplate(template);
+    setIsViewModalOpen(true);
+  };
+
   return (
     <div className="h-full flex flex-col bg-white border-r">
       {/* Header */}
       <div className="p-3 border-b">
         <div className="flex items-center mb-3">
           <h2 className="text-lg font-semibold flex-grow">Templates</h2>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-8 w-8"
-            onClick={() => setIsCreateModalOpen(true)}
-          >
-            <PlusCircle className="h-5 w-5 text-gray-500" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className={cn(
+                "h-8 w-8",
+                viewMode === 'grid' && "bg-gray-100"
+              )}
+              onClick={() => setViewMode('grid')}
+              title="Visualização em grade"
+            >
+              <LayoutGrid className="h-4 w-4 text-gray-500" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className={cn(
+                "h-8 w-8",
+                viewMode === 'list' && "bg-gray-100"
+              )}
+              onClick={() => setViewMode('list')}
+              title="Visualização em lista"
+            >
+              <List className="h-4 w-4 text-gray-500" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8"
+              onClick={() => setIsCreateModalOpen(true)}
+              title="Criar novo template"
+            >
+              <PlusCircle className="h-5 w-5 text-gray-500" />
+            </Button>
+          </div>
         </div>
         
         <div className="relative">
@@ -122,92 +162,50 @@ const TemplatesList: React.FC<TemplatesListProps> = ({
         </div>
       </div>
 
-      {/* Categories filter */}
-      <div className="p-2 border-b overflow-x-auto whitespace-nowrap">
-        <Button 
-          variant="ghost"
-          size="sm"
-          className={cn(
-            "h-8 text-xs mr-1 rounded-full",
-            categoryFilter === 'all' && "bg-vinizap-primary text-white hover:text-white hover:bg-vinizap-primary/90"
-          )}
-          onClick={() => setCategoryFilter('all')}
-        >
-          <Filter className="h-3.5 w-3.5 mr-1" />
-          Todas
-        </Button>
+      {/* Filters */}
+      <div className="p-2 border-b flex justify-between items-center">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="h-8 gap-1">
+              <Filter className="h-3.5 w-3.5" />
+              {categoryFilter === 'all' ? 'Todas categorias' : categoryFilter}
+              <ChevronDown className="h-3.5 w-3.5 ml-1" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuRadioGroup value={categoryFilter} onValueChange={(value: any) => setCategoryFilter(value)}>
+              <DropdownMenuRadioItem value="all">Todas categorias</DropdownMenuRadioItem>
+              <DropdownMenuSeparator />
+              {categories.map((category) => (
+                <DropdownMenuRadioItem key={category} value={category}>
+                  {category}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
         
-        {categories.map((category) => (
-          <Button 
-            key={category}
-            variant="ghost"
-            size="sm"
-            className={cn(
-              "h-8 text-xs mr-1 rounded-full",
-              categoryFilter === category && "bg-vinizap-primary text-white hover:text-white hover:bg-vinizap-primary/90"
-            )}
-            onClick={() => setCategoryFilter(category)}
-          >
-            {category}
-          </Button>
-        ))}
+        <div className="text-xs text-gray-500">
+          {filteredTemplates.length} {filteredTemplates.length === 1 ? 'template' : 'templates'}
+        </div>
       </div>
 
       {/* Templates list */}
       <div className="flex-grow overflow-y-auto">
         {filteredTemplates.length > 0 ? (
-          <div className="p-2 grid grid-cols-1 gap-2">
+          <div className={cn(
+            "p-2",
+            viewMode === 'grid' 
+              ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2" 
+              : "flex flex-col gap-2"
+          )}>
             {filteredTemplates.map((template) => (
-              <div 
+              <TemplateCard
                 key={template.id}
-                className="bg-white border rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow"
-              >
-                <div className="p-3">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center gap-2">
-                      {getIconByType(template.type)}
-                      <span className="font-medium">{template.name}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Badge variant="secondary" className="text-xs">
-                        {template.category}
-                      </Badge>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-7 w-7">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => onInsertTemplate?.(template)}>
-                            Inserir
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onEditTemplate?.(template.id)}>
-                            Editar
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-500">
-                            Excluir
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                  
-                  <div className="text-sm text-gray-600 line-clamp-2">
-                    {template.content}
-                  </div>
-                  
-                  {template.type !== 'text' && (
-                    <div className="mt-2 flex items-center text-xs text-blue-500">
-                      {template.type === 'image' && 'Imagem'}
-                      {template.type === 'video' && 'Vídeo'}
-                      {template.type === 'audio' && 'Áudio'}
-                      {template.type === 'file' && 'Arquivo'}
-                    </div>
-                  )}
-                </div>
-              </div>
+                template={template}
+                viewMode={viewMode}
+                onClick={() => handleViewTemplate(template)}
+              />
             ))}
           </div>
         ) : (
@@ -222,6 +220,15 @@ const TemplatesList: React.FC<TemplatesListProps> = ({
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSave={handleCreateTemplate}
+      />
+
+      {/* View/Edit/Delete Template Modal */}
+      <TemplateViewModal
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        template={selectedTemplate}
+        onSave={handleSaveTemplate}
+        onDelete={handleDeleteTemplate}
       />
     </div>
   );
