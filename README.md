@@ -70,3 +70,6 @@ We don't support custom domains (yet). If you want to deploy your project under 
 
 ## Browser Tool
 npx @agentdeskai/browser-tools-server@1.2.0
+
+## Biblioteca de Emoji
+https://github.com/ealush/emoji-picker-react
