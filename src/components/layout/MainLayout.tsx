@@ -1,11 +1,7 @@
-import React, { ReactNode, useMemo, useCallback, useState } from 'react';
+import React, { ReactNode, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import UserMenu from './UserMenu';
-import Navigation from './Navigation';
-import { cn } from '@/lib/utils';
-
-export type TabType = 'chat' | 'templates' | 'funnels';
+import Header, { TabType } from './Header';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -44,26 +40,6 @@ const MainLayout = ({
        currentPath.includes('/funnels') ? 'funnels' : undefined);
   }, [activeTab, location.pathname]);
 
-  // Determine if we're on dashboard page - memoized for performance
-  const isDashboard = useMemo(() => 
-    location.pathname.includes('/dashboard'), 
-    [location.pathname]
-  );
-
-  // Handle tab change with useCallback for better performance
-  const handleTabChange = useCallback((tab: TabType) => {
-    if (onChangeTab) {
-      onChangeTab(tab);
-    }
-  }, [onChangeTab]);
-
-  // Handle view mode change
-  const handleViewModeChange = useCallback((mode: 'grid' | 'list') => {
-    if (onViewModeChange) {
-      onViewModeChange(mode);
-    }
-  }, [onViewModeChange]);
-
   // Redirect to auth page if not logged in
   React.useEffect(() => {
     if (!loading && !user) {
@@ -77,25 +53,12 @@ const MainLayout = ({
 
   return (
     <div className="h-full flex flex-col">
-      <header className="border-b bg-white py-2 px-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold">ViniZap</h1>
-          <div className="flex items-center gap-4">
-            <UserMenu />
-          </div>
-        </div>
-        
-        {/* Navigation - Hide on Dashboard */}
-        {!isDashboard && (
-          <Navigation 
-            currentTab={currentTab} 
-            onTabChange={handleTabChange}
-            viewMode={viewMode}
-            onViewModeChange={handleViewModeChange}
-            showViewToggle={currentTab === 'templates'}
-          />
-        )}
-      </header>
+      <Header 
+        currentTab={currentTab}
+        onTabChange={onChangeTab}
+        viewMode={viewMode}
+        onViewModeChange={onViewModeChange}
+      />
       <main className="flex-1 overflow-hidden">
         {children}
       </main>
