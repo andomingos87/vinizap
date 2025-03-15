@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
-import TabsNavigation, { TabType } from '@/components/layout/TabsNavigation';
+import { TabType } from '@/components/layout/MainLayout';
 import ContactsList from '@/components/chat/ContactsList';
 import ConversationPanel from '@/components/chat/ConversationPanel';
 import TemplatesList from '@/components/templates/TemplatesList';
@@ -99,6 +98,10 @@ const Index = () => {
     }
   };
 
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+  };
+
   const renderMainContent = () => {
     switch (activeTab) {
       case 'chat':
@@ -150,9 +153,8 @@ const Index = () => {
   };
 
   return (
-    <MainLayout>
+    <MainLayout activeTab={activeTab} onChangeTab={handleTabChange}>
       <div className="h-screen flex flex-col">
-        <TabsNavigation activeTab={activeTab} onChangeTab={setActiveTab} />
         {renderMainContent()}
 
         {/* Onboarding Modal */}

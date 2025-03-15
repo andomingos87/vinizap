@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, LayoutDashboard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const UserMenu = () => {
@@ -34,6 +33,10 @@ const UserMenu = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleNavigateToDashboard = () => {
+    navigate('/dashboard');
   };
 
   if (!user) {
@@ -61,6 +64,11 @@ const UserMenu = () => {
             <p className="font-medium">{user.email}</p>
           </div>
         </div>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="cursor-pointer" onClick={handleNavigateToDashboard}>
+          <LayoutDashboard className="mr-2 h-4 w-4" />
+          <span>Dashboard</span>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="cursor-pointer" onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
