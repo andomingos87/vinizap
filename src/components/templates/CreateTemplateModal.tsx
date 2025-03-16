@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Check, X, MessageSquare, Image, Video, FileText, Mic } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -107,9 +107,15 @@ const CreateTemplateModal: React.FC<CreateTemplateModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent 
+        className="sm:max-w-[500px]"
+        aria-describedby="template-modal-description"
+      >
         <DialogHeader>
           <DialogTitle>Criar novo template</DialogTitle>
+          <DialogDescription id="template-modal-description">
+            Configure um template para usar em suas mensagens
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>

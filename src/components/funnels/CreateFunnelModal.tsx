@@ -47,6 +47,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import StepConfigModal from "./StepConfigModal";
 
 const funnelStepSchema = z.object({
   id: z.string().optional(),
@@ -99,6 +100,7 @@ const FunnelModal: React.FC<FunnelModalProps> = ({
   const [activeTab, setActiveTab] = useState<string>("details");
   const [isEditing, setIsEditing] = useState<boolean>(mode === "edit");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState<boolean>(false);
   
   const isViewOnly = mode === "view" && !isEditing;
 
@@ -145,7 +147,7 @@ const FunnelModal: React.FC<FunnelModalProps> = ({
     setSteps([...steps, newStep]);
     form.setValue("steps", [...steps, newStep]);
     setCurrentStepIndex(steps.length);
-    setActiveTab("config");
+    setIsConfigModalOpen(true);
   };
 
   const handleRemoveStep = (index: number) => {
@@ -174,7 +176,11 @@ const FunnelModal: React.FC<FunnelModalProps> = ({
 
   const handleSelectStep = (index: number) => {
     setCurrentStepIndex(index);
-    setActiveTab(isViewOnly ? "preview" : "config");
+    if (isViewOnly) {
+      setActiveTab("preview");
+    } else {
+      setIsConfigModalOpen(true);
+    }
   };
 
   const handleStepChange = (field: keyof FunnelStep, value: any) => {
@@ -275,10 +281,13 @@ const FunnelModal: React.FC<FunnelModalProps> = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+        <DialogContent 
+          className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto"
+          aria-describedby="funnel-modal-description"
+        >
           <DialogHeader>
             <DialogTitle>{getModalTitle()}</DialogTitle>
-            <DialogDescription>
+            <DialogDescription id="funnel-modal-description">
               {mode === "create" || isEditing 
                 ? "Configure um fluxo de mensagens automáticas para seus contatos" 
                 : "Visualize os detalhes do seu funil de mensagens"}
@@ -288,10 +297,9 @@ const FunnelModal: React.FC<FunnelModalProps> = ({
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
               <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="details">Detalhes</TabsTrigger>
                   <TabsTrigger value="steps">Etapas</TabsTrigger>
-                  <TabsTrigger value="config">Configuração</TabsTrigger>
                   <TabsTrigger value="preview">Visualização</TabsTrigger>
                 </TabsList>
                 
@@ -429,184 +437,6 @@ const FunnelModal: React.FC<FunnelModalProps> = ({
                   </Card>
                 </TabsContent>
                 
-                <TabsContent value="config" className="space-y-4 pt-4">
-                  {currentStepIndex !== null ? (
-                    <Card>
-                      <CardHeader className="py-3">
-                        <CardTitle className="text-sm font-medium flex items-center gap-2">
-                          <Badge variant="outline" className="h-5 w-5 flex items-center justify-center p-0 rounded-full">
-                            {currentStepIndex + 1}
-                          </Badge>
-                          {isViewOnly ? "Detalhes da Etapa" : "Configurar Etapa"}
-                        </CardTitle>
-                        <CardDescription className="text-xs">
-                          {steps[currentStepIndex].name || `Etapa ${currentStepIndex + 1}`}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div>
-                          <FormLabel htmlFor="step-name">Nome da Etapa</FormLabel>
-                          <Input
-                            id="step-name"
-                            value={steps[currentStepIndex].name}
-                            onChange={(e) => handleStepChange("name", e.target.value)}
-                            placeholder="Nome da etapa"
-                            className="mt-1"
-                            disabled={isViewOnly}
-                          />
-                          <FormDescription className="text-xs mt-1">
-                            Um nome descritivo para identificar esta etapa
-                          </FormDescription>
-                        </div>
-
-                        <div>
-                          <FormLabel htmlFor="step-template">Template</FormLabel>
-                          <Select
-                            value={steps[currentStepIndex].templateId}
-                            onValueChange={(value) => handleStepChange("templateId", value)}
-                            disabled={isViewOnly}
-                          >
-                            <SelectTrigger className="mt-1">
-                              <SelectValue placeholder="Selecione um template" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {templates.map((template) => (
-                                <SelectItem key={template.id} value={template.id}>
-                                  {template.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormDescription className="text-xs mt-1">
-                            Mensagem que será enviada nesta etapa
-                          </FormDescription>
-                        </div>
-
-                        <div>
-                          <FormLabel htmlFor="step-delay" className="flex items-center gap-1">
-                            <Clock className="h-3.5 w-3.5 text-gray-500" />
-                            Atraso (minutos)
-                          </FormLabel>
-                          <Input
-                            id="step-delay"
-                            type="number"
-                            min="0"
-                            value={steps[currentStepIndex].delay}
-                            onChange={(e) => handleStepChange("delay", parseInt(e.target.value, 10))}
-                            className="mt-1"
-                            disabled={isViewOnly}
-                          />
-                          <FormDescription className="text-xs mt-1">
-                            Tempo de espera antes de enviar
-                          </FormDescription>
-                        </div>
-
-                        <div>
-                          <FormLabel htmlFor="step-condition">Condição para próxima etapa</FormLabel>
-                          {isViewOnly ? (
-                            <div className="mt-2 p-3 bg-gray-50 rounded-md border">
-                              <div className="flex items-center gap-2">
-                                {steps[currentStepIndex].condition === "none" && (
-                                  <>
-                                    <ArrowRight className="h-4 w-4 text-gray-500" />
-                                    <span>Sem condição - Avança automaticamente após o atraso</span>
-                                  </>
-                                )}
-                                {steps[currentStepIndex].condition === "response" && (
-                                  <>
-                                    <MessageSquare className="h-4 w-4 text-blue-500" />
-                                    <span>Resposta - Avança quando o cliente responder</span>
-                                  </>
-                                )}
-                                {steps[currentStepIndex].condition === "click" && (
-                                  <>
-                                    <MousePointerClick className="h-4 w-4 text-green-500" />
-                                    <span>Clique - Avança quando clicar em um link</span>
-                                  </>
-                                )}
-                                {steps[currentStepIndex].condition === "custom" && (
-                                  <>
-                                    <Edit className="h-4 w-4 text-orange-500" />
-                                    <span>Personalizado - {steps[currentStepIndex].customCondition}</span>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
-                              {conditionOptions.map((option) => (
-                                <div
-                                  key={option.value}
-                                  className={cn(
-                                    "flex items-start p-3 rounded-md border cursor-pointer transition-all",
-                                    steps[currentStepIndex].condition === option.value
-                                      ? "border-vinizap-primary bg-vinizap-primary/5 shadow-sm"
-                                      : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                                  )}
-                                  onClick={() => handleStepChange("condition", option.value)}
-                                >
-                                  <div className={cn(
-                                    "flex items-center justify-center h-8 w-8 rounded-full mr-3 shrink-0",
-                                    steps[currentStepIndex].condition === option.value
-                                      ? "bg-vinizap-primary/10 text-vinizap-primary"
-                                      : "bg-gray-100 text-gray-500"
-                                  )}>
-                                    {option.icon}
-                                  </div>
-                                  <div>
-                                    <div className={cn(
-                                      "font-medium",
-                                      steps[currentStepIndex].condition === option.value && "text-vinizap-primary"
-                                    )}>
-                                      {option.label}
-                                    </div>
-                                    <div className="text-xs text-gray-500 mt-1">
-                                      {option.description}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-
-                        {steps[currentStepIndex].condition === "custom" && (
-                          <div>
-                            <FormLabel htmlFor="step-custom-condition">Condição personalizada</FormLabel>
-                            <Input
-                              id="step-custom-condition"
-                              value={steps[currentStepIndex].customCondition}
-                              onChange={(e) => handleStepChange("customCondition", e.target.value)}
-                              placeholder="Condição personalizada"
-                              className="mt-1"
-                              disabled={isViewOnly}
-                            />
-                            <FormDescription className="text-xs mt-1">
-                              Descrição da condição personalizada
-                            </FormDescription>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-10 text-center">
-                      <List className="h-12 w-12 text-gray-300 mb-2" />
-                      <h3 className="text-lg font-medium text-gray-700">Nenhuma etapa selecionada</h3>
-                      <p className="text-sm text-gray-500 mt-1 max-w-md">
-                        Selecione uma etapa na aba "Etapas" para {isViewOnly ? "visualizar seus detalhes" : "configurar seus detalhes"}
-                      </p>
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        className="mt-4"
-                        onClick={() => setActiveTab("steps")}
-                      >
-                        Ir para lista de etapas
-                      </Button>
-                    </div>
-                  )}
-                </TabsContent>
-                
                 <TabsContent value="preview" className="space-y-4 pt-4">
                   <Card>
                     <CardHeader className="py-3">
@@ -629,7 +459,11 @@ const FunnelModal: React.FC<FunnelModalProps> = ({
                                 )}
                                 onClick={() => {
                                   setCurrentStepIndex(index);
-                                  setActiveTab(isViewOnly ? "config" : "config");
+                                  if (isViewOnly) {
+                                    setActiveTab("preview");
+                                  } else {
+                                    setIsConfigModalOpen(true);
+                                  }
                                 }}
                               >
                                 <div className="flex items-center gap-2">
@@ -761,6 +595,18 @@ const FunnelModal: React.FC<FunnelModalProps> = ({
           </Form>
         </DialogContent>
       </Dialog>
+
+      {currentStepIndex !== null && steps[currentStepIndex] && (
+        <StepConfigModal
+          isOpen={isConfigModalOpen}
+          onClose={() => setIsConfigModalOpen(false)}
+          step={steps[currentStepIndex]}
+          stepIndex={currentStepIndex}
+          templates={templates}
+          onStepChange={handleStepChange}
+          isViewOnly={isViewOnly}
+        />
+      )}
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
