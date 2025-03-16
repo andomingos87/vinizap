@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { 
   MessageSquare, 
   Bug, 
@@ -131,197 +131,202 @@ const Help = () => {
 
   return (
     <MainLayout>
-      <div className="container max-w-4xl py-6">
-        <div className="flex items-center mb-6">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="mr-2" 
-            onClick={handleGoBack}
-          >
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            Voltar
-          </Button>
-          <h1 className="text-2xl font-bold">Central de Ajuda</h1>
+      <div className="p-6 h-full overflow-auto bg-gray-50 dark:bg-gray-900">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="rounded-full" 
+              asChild
+            >
+              <Link to="/">
+                <ArrowLeft className="h-5 w-5 text-vinizap-primary" />
+              </Link>
+            </Button>
+            <h1 className="text-3xl font-bold">Central de Ajuda</h1>
+          </div>
         </div>
 
-        <Tabs defaultValue="feedback" className="w-full">
-          <TabsList className="grid grid-cols-3 mb-6">
-            <TabsTrigger value="feedback" className="flex items-center">
-              <MessageSquare className="h-4 w-4 mr-2" />
-              Enviar Feedback
-            </TabsTrigger>
-            <TabsTrigger value="bug" className="flex items-center">
-              <Bug className="h-4 w-4 mr-2" />
-              Reportar Bug
-            </TabsTrigger>
-            <TabsTrigger value="support" className="flex items-center">
-              <HelpCircle className="h-4 w-4 mr-2" />
-              Suporte
-            </TabsTrigger>
-          </TabsList>
+        <div className="max-w-4xl mx-auto">
+          <Tabs defaultValue="feedback" className="w-full">
+            <TabsList className="grid grid-cols-3 mb-6">
+              <TabsTrigger value="feedback" className="flex items-center">
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Enviar Feedback
+              </TabsTrigger>
+              <TabsTrigger value="bug" className="flex items-center">
+                <Bug className="h-4 w-4 mr-2" />
+                Reportar Bug
+              </TabsTrigger>
+              <TabsTrigger value="support" className="flex items-center">
+                <HelpCircle className="h-4 w-4 mr-2" />
+                Suporte
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Feedback Tab */}
-          <TabsContent value="feedback">
-            <Card>
-              <CardHeader>
-                <CardTitle>Enviar Feedback</CardTitle>
-                <CardDescription>
-                  Compartilhe suas sugestões e opiniões para nos ajudar a melhorar o ViniZap.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label htmlFor="feedback" className="text-sm font-medium">
-                      Seu feedback
-                    </label>
-                    <Textarea
-                      id="feedback"
-                      placeholder="Escreva seu feedback aqui..."
-                      rows={6}
-                      value={feedbackMessage}
-                      onChange={(e) => setFeedbackMessage(e.target.value)}
-                    />
+            {/* Feedback Tab */}
+            <TabsContent value="feedback">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Enviar Feedback</CardTitle>
+                  <CardDescription>
+                    Compartilhe suas sugestões e opiniões para nos ajudar a melhorar o ViniZap.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label htmlFor="feedback" className="text-sm font-medium">
+                        Seu feedback
+                      </label>
+                      <Textarea
+                        id="feedback"
+                        placeholder="Escreva seu feedback aqui..."
+                        rows={6}
+                        value={feedbackMessage}
+                        onChange={(e) => setFeedbackMessage(e.target.value)}
+                      />
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-end">
-                <Button 
-                  onClick={handleSubmitFeedback} 
-                  disabled={isSubmitting}
-                  className="flex items-center"
-                >
-                  {isSubmitting ? "Enviando..." : (
-                    <>
-                      <Send className="h-4 w-4 mr-2" />
-                      Enviar Feedback
-                    </>
-                  )}
-                </Button>
-              </CardFooter>
-            </Card>
-          </TabsContent>
+                </CardContent>
+                <CardFooter className="flex justify-end">
+                  <Button 
+                    onClick={handleSubmitFeedback} 
+                    disabled={isSubmitting}
+                    className="flex items-center"
+                  >
+                    {isSubmitting ? "Enviando..." : (
+                      <>
+                        <Send className="h-4 w-4 mr-2" />
+                        Enviar Feedback
+                      </>
+                    )}
+                  </Button>
+                </CardFooter>
+              </Card>
+            </TabsContent>
 
-          {/* Bug Report Tab */}
-          <TabsContent value="bug">
-            <Card>
-              <CardHeader>
-                <CardTitle>Reportar Bug</CardTitle>
-                <CardDescription>
-                  Encontrou um problema? Ajude-nos a melhorar reportando bugs.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label htmlFor="bug-description" className="text-sm font-medium">
-                      Descrição do bug
-                    </label>
-                    <Textarea
-                      id="bug-description"
-                      placeholder="Descreva o bug que você encontrou..."
-                      rows={4}
-                      value={bugDescription}
-                      onChange={(e) => setBugDescription(e.target.value)}
-                    />
+            {/* Bug Report Tab */}
+            <TabsContent value="bug">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Reportar Bug</CardTitle>
+                  <CardDescription>
+                    Encontrou um problema? Ajude-nos a melhorar reportando bugs.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label htmlFor="bug-description" className="text-sm font-medium">
+                        Descrição do bug
+                      </label>
+                      <Textarea
+                        id="bug-description"
+                        placeholder="Descreva o bug que você encontrou..."
+                        rows={4}
+                        value={bugDescription}
+                        onChange={(e) => setBugDescription(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="bug-steps" className="text-sm font-medium">
+                        Passos para reproduzir (opcional)
+                      </label>
+                      <Textarea
+                        id="bug-steps"
+                        placeholder="Descreva os passos para reproduzir o bug..."
+                        rows={4}
+                        value={bugSteps}
+                        onChange={(e) => setBugSteps(e.target.value)}
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <label htmlFor="bug-steps" className="text-sm font-medium">
-                      Passos para reproduzir (opcional)
-                    </label>
-                    <Textarea
-                      id="bug-steps"
-                      placeholder="Descreva os passos para reproduzir o bug..."
-                      rows={4}
-                      value={bugSteps}
-                      onChange={(e) => setBugSteps(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-end">
-                <Button 
-                  onClick={handleReportBug} 
-                  disabled={isSubmitting}
-                  className="flex items-center"
-                >
-                  {isSubmitting ? "Enviando..." : (
-                    <>
-                      <Bug className="h-4 w-4 mr-2" />
-                      Reportar Bug
-                    </>
-                  )}
-                </Button>
-              </CardFooter>
-            </Card>
-          </TabsContent>
+                </CardContent>
+                <CardFooter className="flex justify-end">
+                  <Button 
+                    onClick={handleReportBug} 
+                    disabled={isSubmitting}
+                    className="flex items-center"
+                  >
+                    {isSubmitting ? "Enviando..." : (
+                      <>
+                        <Bug className="h-4 w-4 mr-2" />
+                        Reportar Bug
+                      </>
+                    )}
+                  </Button>
+                </CardFooter>
+              </Card>
+            </TabsContent>
 
-          {/* Support Tab */}
-          <TabsContent value="support">
-            <Card>
-              <CardHeader>
-                <CardTitle>Contato com Suporte</CardTitle>
-                <CardDescription>
-                  Precisa de ajuda? Entre em contato com nossa equipe de suporte.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label htmlFor="support-email" className="text-sm font-medium">
-                      Seu email
-                    </label>
-                    <Input
-                      id="support-email"
-                      type="email"
-                      placeholder="Seu email de contato"
-                      value={user?.email || ''}
-                      disabled
-                    />
+            {/* Support Tab */}
+            <TabsContent value="support">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Contato com Suporte</CardTitle>
+                  <CardDescription>
+                    Precisa de ajuda? Entre em contato com nossa equipe de suporte.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label htmlFor="support-email" className="text-sm font-medium">
+                        Seu email
+                      </label>
+                      <Input
+                        id="support-email"
+                        type="email"
+                        placeholder="Seu email de contato"
+                        value={user?.email || ''}
+                        disabled
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="support-subject" className="text-sm font-medium">
+                        Assunto
+                      </label>
+                      <Input
+                        id="support-subject"
+                        placeholder="Assunto da sua mensagem"
+                        value={supportSubject}
+                        onChange={(e) => setSupportSubject(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="support-message" className="text-sm font-medium">
+                        Mensagem
+                      </label>
+                      <Textarea
+                        id="support-message"
+                        placeholder="Descreva em detalhes como podemos ajudá-lo..."
+                        rows={6}
+                        value={supportMessage}
+                        onChange={(e) => setSupportMessage(e.target.value)}
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <label htmlFor="support-subject" className="text-sm font-medium">
-                      Assunto
-                    </label>
-                    <Input
-                      id="support-subject"
-                      placeholder="Assunto da sua mensagem"
-                      value={supportSubject}
-                      onChange={(e) => setSupportSubject(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="support-message" className="text-sm font-medium">
-                      Mensagem
-                    </label>
-                    <Textarea
-                      id="support-message"
-                      placeholder="Descreva em detalhes como podemos ajudá-lo..."
-                      rows={6}
-                      value={supportMessage}
-                      onChange={(e) => setSupportMessage(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-end">
-                <Button 
-                  onClick={handleContactSupport} 
-                  disabled={isSubmitting}
-                  className="flex items-center"
-                >
-                  {isSubmitting ? "Enviando..." : (
-                    <>
-                      <Send className="h-4 w-4 mr-2" />
-                      Enviar Mensagem
-                    </>
-                  )}
-                </Button>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                </CardContent>
+                <CardFooter className="flex justify-end">
+                  <Button 
+                    onClick={handleContactSupport} 
+                    disabled={isSubmitting}
+                    className="flex items-center"
+                  >
+                    {isSubmitting ? "Enviando..." : (
+                      <>
+                        <Send className="h-4 w-4 mr-2" />
+                        Enviar Mensagem
+                      </>
+                    )}
+                  </Button>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </MainLayout>
   );
