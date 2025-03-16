@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, LayoutDashboard } from 'lucide-react';
+import { LogOut, LayoutDashboard, User, HelpCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 // User not logged in button component
@@ -49,6 +49,14 @@ const UserMenu = () => {
     navigate('/dashboard');
   }, [navigate]);
 
+  const handleNavigateToProfile = useCallback(() => {
+    navigate('/profile');
+  }, [navigate]);
+
+  const handleNavigateToHelp = useCallback(() => {
+    navigate('/help');
+  }, [navigate]);
+
   const handleNavigateToAuth = useCallback(() => {
     navigate('/auth');
   }, [navigate]);
@@ -77,9 +85,17 @@ const UserMenu = () => {
           </div>
         </div>
         <DropdownMenuSeparator />
+        <DropdownMenuItem className="cursor-pointer" onClick={handleNavigateToProfile}>
+          <User className="mr-2 h-4 w-4" />
+          <span>Meu Perfil</span>
+        </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" onClick={handleNavigateToDashboard}>
           <LayoutDashboard className="mr-2 h-4 w-4" />
           <span>Dashboard</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer" onClick={handleNavigateToHelp}>
+          <HelpCircle className="mr-2 h-4 w-4" />
+          <span>Central de Ajuda</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600" onClick={handleSignOut}>
