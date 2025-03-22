@@ -118,7 +118,7 @@ const ConnectWhatsAppStep = ({ onNext }: ConnectWhatsAppStepProps) => {
               <img 
                 src={`data:image/png;base64,${qrCodeData}`} 
                 alt="WhatsApp QR Code" 
-                className="h-48 w-48"
+                className="h-48 w-48 object-contain"
               />
             </div>
             <p className="text-xs text-muted-foreground mt-2 text-center">
