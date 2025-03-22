@@ -1,3 +1,4 @@
+
 import { Contact, Message, Template, Funnel } from "@/types";
 
 export const contacts: Contact[] = [
@@ -277,6 +278,7 @@ export const funnels: Funnel[] = [
     id: "1",
     name: "Captação de Leads",
     description: "Funil para captação e qualificação de leads",
+    isActive: true,
     steps: [
       {
         id: "1-1",
@@ -305,6 +307,7 @@ export const funnels: Funnel[] = [
     id: "2",
     name: "Pós-Venda",
     description: "Acompanhamento após a venda",
+    isActive: false,
     steps: [
       {
         id: "2-1",
