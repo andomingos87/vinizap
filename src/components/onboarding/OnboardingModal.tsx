@@ -1,10 +1,8 @@
+
 import React, { useState } from 'react';
 import { 
   Dialog, 
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription
+  DialogContent
 } from "@/components/ui/dialog";
 import { StepIndicator } from './shared/StepIndicator';
 import WelcomeStep from './steps/WelcomeStep';
@@ -50,12 +48,6 @@ const OnboardingModal = ({ open, onOpenChange }: OnboardingModalProps) => {
         className="sm:max-w-[500px]"
         aria-describedby="onboarding-description"
       >
-        <DialogHeader>
-          <DialogTitle>Bem-vindo ao ViniZap</DialogTitle>
-          <DialogDescription id="onboarding-description">
-            Vamos configurar sua conta para começar a usar o sistema
-          </DialogDescription>
-        </DialogHeader>
         {renderStepContent()}
         <StepIndicator currentStep={step} totalSteps={totalSteps} />
       </DialogContent>

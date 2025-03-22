@@ -12,6 +12,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/AuthContext";
 import { Contact, Message } from '@/types';
 import { contacts, conversations, templates, funnels } from '@/data/mockData';
+import { supabase } from '@/integrations/supabase/client';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<TabType>('chat');
@@ -19,17 +20,43 @@ const Index = () => {
   const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isCheckingConnection, setIsCheckingConnection] = useState(true);
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const { user } = useAuth();
 
-  // Show onboarding modal when user logs in
+  // Check if user has existing WhatsApp connection
   useEffect(() => {
-    if (user) {
-      // In a real app, you might want to check if user has completed onboarding before
-      // For now, we'll just show it every time they log in
-      setShowOnboarding(true);
-    }
+    const checkExistingConnection = async () => {
+      if (!user) {
+        setIsCheckingConnection(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('whatsapp_connections')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('status', 'connected')
+          .maybeSingle();
+
+        if (error) {
+          console.error('Error checking connection status:', error);
+        }
+
+        // If no active connection found, show onboarding
+        if (!data) {
+          setShowOnboarding(true);
+        }
+      } catch (err) {
+        console.error('Error fetching connection status:', err);
+      } finally {
+        setIsCheckingConnection(false);
+      }
+    };
+
+    checkExistingConnection();
   }, [user]);
 
   useEffect(() => {
@@ -103,6 +130,11 @@ const Index = () => {
     setActiveTab(tab);
   };
 
+  // Handle onboarding completion
+  const handleOnboardingClose = () => {
+    setShowOnboarding(false);
+  };
+
   const renderMainContent = () => {
     switch (activeTab) {
       case 'chat':
@@ -153,6 +185,17 @@ const Index = () => {
     }
   };
 
+  // Show loading indicator while checking connection status
+  if (isCheckingConnection) {
+    return (
+      <MainLayout activeTab={activeTab} onChangeTab={handleTabChange}>
+        <div className="h-full flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        </div>
+      </MainLayout>
+    );
+  }
+
   return (
     <MainLayout activeTab={activeTab} onChangeTab={handleTabChange}>
       <div className="h-full flex flex-col overflow-hidden">
@@ -161,7 +204,7 @@ const Index = () => {
         {/* Onboarding Modal */}
         <OnboardingModal 
           open={showOnboarding} 
-          onOpenChange={setShowOnboarding} 
+          onOpenChange={handleOnboardingClose} 
         />
       </div>
     </MainLayout>
