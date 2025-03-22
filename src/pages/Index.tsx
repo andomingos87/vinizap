@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
-import { TabType } from '@/components/layout/MainLayout';
+import { TabType } from '@/components/layout/Header';
 import ContactsList from '@/components/chat/ContactsList';
 import ConversationPanel from '@/components/chat/ConversationPanel';
 import TemplatesList from '@/components/templates/TemplatesList';

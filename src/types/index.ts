@@ -76,4 +76,5 @@ export interface Funnel {
   name: string;
   description: string;
   steps: FunnelStep[];
+  isActive: boolean; // Adding the isActive property
 }

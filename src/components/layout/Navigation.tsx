@@ -1,7 +1,8 @@
+
 import React, { useMemo } from 'react';
 import { MessageSquare, FileText, Filter, Grid, List } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { TabType } from './MainLayout';
+import { TabType } from './Header';
 
 interface NavigationProps {
   currentTab?: TabType;

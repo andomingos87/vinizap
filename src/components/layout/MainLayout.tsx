@@ -1,7 +1,10 @@
+
 import React, { ReactNode, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import Header, { TabType } from './Header';
+
+export type { TabType }; // Export the TabType from Header
 
 interface MainLayoutProps {
   children: ReactNode;

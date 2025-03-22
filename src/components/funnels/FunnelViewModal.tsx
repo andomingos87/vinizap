@@ -61,14 +61,15 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Funnel, FunnelStep, Template } from "@/types";
+import { Funnel, FunnelStep, Template, StepCondition } from "@/types";
 
 const funnelStepSchema = z.object({
   id: z.string(),
   name: z.string().optional(),
   templateId: z.string().min(1, { message: "Selecione um template" }),
   delay: z.number().min(0, { message: "O atraso deve ser um número positivo" }),
-  condition: z.enum(["none", "response", "click"]),
+  condition: z.enum(["none", "response", "click", "custom"] as const),
+  customCondition: z.string().optional(),
 });
 
 const funnelSchema = z.object({
@@ -167,7 +168,6 @@ const FunnelViewModal: React.FC<FunnelViewModalProps> = ({
     setIsEditing(true);
   };
 
-  // Step management functions
   const handleAddStep = () => {
     const newStep: FunnelStep = {
       id: crypto.randomUUID(),
@@ -230,6 +230,12 @@ const FunnelViewModal: React.FC<FunnelViewModalProps> = ({
       description: "Avança quando clicar em um link",
       icon: <MousePointerClick className="h-4 w-4" />,
     },
+    {
+      value: "custom",
+      label: "Personalizado",
+      description: "Condição personalizada",
+      icon: <Edit className="h-4 w-4" />,
+    }
   ];
 
   const FunnelIcon = ({ className }: { className?: string }) => (
@@ -523,6 +529,12 @@ const FunnelViewModal: React.FC<FunnelViewModalProps> = ({
                                       <span>Clique - Avança quando clicar em um link</span>
                                     </>
                                   )}
+                                  {steps[currentStepIndex].condition === "custom" && (
+                                    <>
+                                      <Edit className="h-4 w-4 text-vinizap-primary" />
+                                      <span>Personalizado - Condição personalizada</span>
+                                    </>
+                                  )}
                                 </div>
                               </div>
                             ) : (
@@ -643,6 +655,12 @@ const FunnelViewModal: React.FC<FunnelViewModalProps> = ({
                                           <>
                                             <MousePointerClick className="h-3 w-3 text-green-500" />
                                             <span>Quando clicar</span>
+                                          </>
+                                        )}
+                                        {steps[index].condition === "custom" && (
+                                          <>
+                                            <Edit className="h-3 w-3 text-vinizap-primary" />
+                                            <span>Personalizado</span>
                                           </>
                                         )}
                                       </div>
