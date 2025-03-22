@@ -26,7 +26,7 @@ const ConnectWhatsAppStep = ({ onNext }: ConnectWhatsAppStepProps) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'apikey': 'UDHFSDFU32746237HSDF73RH432DSFI7324HERS768'
+          'apikey': 'FD98G1981GER8G4T9HBBFD1G9E8R7TRE5FBDFH8FG49DF8G'
         },
         body: JSON.stringify({
           instanceName: `vinizap-${Date.now()}`, // Using timestamp to create unique instance names
