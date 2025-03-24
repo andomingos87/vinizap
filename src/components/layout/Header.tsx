@@ -1,3 +1,4 @@
+
 import React, { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { MessageSquare, FileText, Filter, Grid, List } from 'lucide-react';
@@ -52,7 +53,7 @@ const Header: React.FC<HeaderProps> = ({
     <header className="border-b bg-white py-3 px-6 shadow-sm">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         {/* Logo */}
-        <h1 className="text-xl font-bold text-vinizap-primary">ViniZap</h1>
+        <h1 className="text-xl font-bold text-vinizap-primary">ZapVenda</h1>
         
         {/* Navigation - Hide on Dashboard */}
         {!isDashboard && (

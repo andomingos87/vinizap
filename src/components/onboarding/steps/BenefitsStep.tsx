@@ -14,7 +14,7 @@ const BenefitsStep = ({ onNext }: BenefitsStepProps) => {
   return (
     <div className="space-y-4">
       <DialogHeader>
-        <DialogTitle className="text-xl">Benefícios do ViniZap</DialogTitle>
+        <DialogTitle className="text-xl">Benefícios do ZapVenda</DialogTitle>
       </DialogHeader>
       <Separator />
       <div className="py-2">
