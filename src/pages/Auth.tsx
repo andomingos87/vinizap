@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,7 +36,6 @@ const Auth = () => {
           description: "Por favor, verifique seu email para confirmar o cadastro.",
         });
       } else {
-        // Store user with id and email
         const userId = `user-${Date.now()}`;
         localStorage.setItem('user', JSON.stringify({ id: userId, email }));
         navigate('/');
@@ -153,145 +151,146 @@ const Auth = () => {
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-green-50 to-emerald-50">
       <div className="md:w-1/2 bg-gradient-to-br from-[#25D366] via-[#128C7E] to-[#075E54]">
-        <div className="md:w-1/2 p-4 md:p-8 flex items-center justify-center">
-          <Card className="w-full max-w-md shadow-lg border-0">
-            <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl font-bold text-center">
-                {showForgotPassword 
-                  ? "Recuperar senha" 
-                  : showVerification 
-                    ? "Verificação de email" 
-                    : activeTab === 'login' 
-                      ? "Bem-vindo de volta" 
-                      : "Crie sua conta"}
-              </CardTitle>
-              <CardDescription className="text-center">
-                {showForgotPassword 
-                  ? "Informe seu email para receber um link de redefinição de senha" 
-                  : showVerification 
-                    ? "Quase lá! Verifique seu email para continuar" 
-                    : activeTab === 'login' 
-                      ? "Entre com suas credenciais para acessar o sistema" 
-                      : "Preencha os dados abaixo para criar sua conta"}
-              </CardDescription>
-            </CardHeader>
-            
-            {showForgotPassword ? (
-              <CardContent>
-                <ForgotPasswordForm />
-              </CardContent>
-            ) : showVerification ? (
-              <CardContent>
-                <VerificationMessage />
-              </CardContent>
-            ) : (
-              <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'login' | 'signup')}>
-                <TabsList className="grid grid-cols-2 w-full mb-4">
-                  <TabsTrigger value="login" className="rounded-l-md">Login</TabsTrigger>
-                  <TabsTrigger value="signup" className="rounded-r-md">Cadastro</TabsTrigger>
-                </TabsList>
-                
-                <form onSubmit={handleAuth}>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input 
-                          id="email" 
-                          type="email" 
-                          placeholder="seu@email.com" 
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="pl-10"
-                          required
-                        />
-                      </div>
+        {/* Left side content */}
+      </div>
+      <div className="md:w-1/2 p-4 md:p-8 flex items-center justify-center">
+        <Card className="w-full max-w-md shadow-lg border-0">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-center">
+              {showForgotPassword 
+                ? "Recuperar senha" 
+                : showVerification 
+                  ? "Verificação de email" 
+                  : activeTab === 'login' 
+                    ? "Bem-vindo de volta" 
+                    : "Crie sua conta"}
+            </CardTitle>
+            <CardDescription className="text-center">
+              {showForgotPassword 
+                ? "Informe seu email para receber um link de redefinição de senha" 
+                : showVerification 
+                  ? "Quase lá! Verifique seu email para continuar" 
+                  : activeTab === 'login' 
+                    ? "Entre com suas credenciais para acessar o sistema" 
+                    : "Preencha os dados abaixo para criar sua conta"}
+            </CardDescription>
+          </CardHeader>
+          
+          {showForgotPassword ? (
+            <CardContent>
+              <ForgotPasswordForm />
+            </CardContent>
+          ) : showVerification ? (
+            <CardContent>
+              <VerificationMessage />
+            </CardContent>
+          ) : (
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'login' | 'signup')}>
+              <TabsList className="grid grid-cols-2 w-full mb-4">
+                <TabsTrigger value="login" className="rounded-l-md">Login</TabsTrigger>
+                <TabsTrigger value="signup" className="rounded-r-md">Cadastro</TabsTrigger>
+              </TabsList>
+              
+              <form onSubmit={handleAuth}>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        placeholder="seu@email.com" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="pl-10"
+                        required
+                      />
                     </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="password">Senha</Label>
-                        {activeTab === 'login' && (
-                          <Button 
-                            variant="link" 
-                            className="p-0 h-auto text-xs"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              setShowForgotPassword(true);
-                            }}
-                          >
-                            Esqueceu a senha?
-                          </Button>
-                        )}
-                      </div>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input 
-                          id="password" 
-                          type={showPassword ? "text" : "password"}
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          className="pl-10 pr-10"
-                          required
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                          onClick={() => setShowPassword(!showPassword)}
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="password">Senha</Label>
+                      {activeTab === 'login' && (
+                        <Button 
+                          variant="link" 
+                          className="p-0 h-auto text-xs"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setShowForgotPassword(true);
+                          }}
                         >
-                          {showPassword ? (
-                            <EyeOff className="h-4 w-4 text-gray-400" />
-                          ) : (
-                            <Eye className="h-4 w-4 text-gray-400" />
-                          )}
+                          Esqueceu a senha?
                         </Button>
-                      </div>
-                    </div>
-                    
-                    <Button type="submit" className="w-full" disabled={loading}>
-                      {loading ? (
-                        'Processando...'
-                      ) : (
-                        <span className="flex items-center">
-                          {activeTab === 'login' ? 'Entrar' : 'Cadastrar'}
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </span>
                       )}
-                    </Button>
-                    
-                    <div className="relative my-4">
-                      <div className="absolute inset-0 flex items-center">
-                        <Separator className="w-full" />
-                      </div>
-                      <div className="relative flex justify-center">
-                        <span className="bg-white px-2 text-xs text-gray-500">
-                          Ao continuar, você concorda com nossos termos
-                        </span>
-                      </div>
                     </div>
-                  </CardContent>
-                </form>
-              </Tabs>
-            )}
-            
-            <CardFooter className="flex justify-center text-sm text-gray-500 pt-0">
-              {!showVerification && !showForgotPassword && (
-                <p>
-                  {activeTab === 'login' ? 'Novo por aqui? ' : 'Já tem uma conta? '}
-                  <Button 
-                    variant="link" 
-                    className="p-0 h-auto"
-                    onClick={() => setActiveTab(activeTab === 'login' ? 'signup' : 'login')}
-                  >
-                    {activeTab === 'login' ? 'Crie sua conta' : 'Faça login'}
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input 
+                        id="password" 
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="pl-10 pr-10"
+                        required
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-gray-400" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-gray-400" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? (
+                      'Processando...'
+                    ) : (
+                      <span className="flex items-center">
+                        {activeTab === 'login' ? 'Entrar' : 'Cadastrar'}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </span>
+                    )}
                   </Button>
-                </p>
-              )}
-            </CardFooter>
-          </Card>
-        </div>
+                  
+                  <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                      <Separator className="w-full" />
+                    </div>
+                    <div className="relative flex justify-center">
+                      <span className="bg-white px-2 text-xs text-gray-500">
+                        Ao continuar, você concorda com nossos termos
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </form>
+            </Tabs>
+          )}
+          
+          <CardFooter className="flex justify-center text-sm text-gray-500 pt-0">
+            {!showVerification && !showForgotPassword && (
+              <p>
+                {activeTab === 'login' ? 'Novo por aqui? ' : 'Já tem uma conta? '}
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto"
+                  onClick={() => setActiveTab(activeTab === 'login' ? 'signup' : 'login')}
+                >
+                  {activeTab === 'login' ? 'Crie sua conta' : 'Faça login'}
+                </Button>
+              </p>
+            )}
+          </CardFooter>
+        </Card>
       </div>
     </div>
   );
