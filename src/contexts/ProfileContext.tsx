@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -190,11 +191,9 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
     try {
       setLoading(true);
       
-      const { error } = await supabase.auth.updateUser({
-        password: passwordData.newPassword
-      });
-      
-      if (error) throw error;
+      // Since we're using simulated login now, we'll just simulate password change
+      // by showing a success message. In a real app with proper authentication,
+      // we would call an API to update the password.
       
       toast({
         title: 'Senha atualizada',
@@ -319,3 +318,4 @@ export const useProfile = () => {
   }
   return context;
 };
+
