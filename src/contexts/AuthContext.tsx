@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface User {
+  id: string;  // Added id property to the User interface
   email: string;
 }
 

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Check, QrCode, RefreshCw, Loader2 } from "lucide-react";
@@ -7,7 +6,6 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface ConnectWhatsAppStepProps {
@@ -55,32 +53,27 @@ const ConnectWhatsAppStep = ({ onNext }: ConnectWhatsAppStepProps) => {
           description: "Sua conta do WhatsApp foi conectada com sucesso.",
         });
 
-        // Save to database
-        if (user) {
+        // Save to localStorage instead of database
+        if (user && user.id) {
           try {
-            const { error: saveError } = await supabase
-              .from('whatsapp_connections')
-              .upsert({
-                user_id: user.id,
-                instance_name: instanceName,
-                instance_id: instanceId,
-                status: 'connected'
-              }, {
-                onConflict: 'user_id',
-              });
-
-            if (saveError) {
-              console.error('Error saving connection:', saveError);
-            } else {
-              // Clear interval and proceed to next step
-              if (checkInterval.current) {
-                window.clearInterval(checkInterval.current);
-                checkInterval.current = null;
-              }
-              onNext();
+            const connectionData = {
+              user_id: user.id,
+              instance_name: instanceName,
+              instance_id: instanceId,
+              status: 'connected',
+              created_at: new Date().toISOString()
+            };
+            
+            localStorage.setItem(`whatsapp_connection_${user.id}`, JSON.stringify(connectionData));
+            
+            // Clear interval and proceed to next step
+            if (checkInterval.current) {
+              window.clearInterval(checkInterval.current);
+              checkInterval.current = null;
             }
-          } catch (dbError) {
-            console.error('Database error:', dbError);
+            onNext();
+          } catch (err) {
+            console.error('Error saving connection data:', err);
           }
         }
       }

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { TabType } from '@/components/layout/Header';
@@ -12,7 +11,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/AuthContext";
 import { Contact, Message } from '@/types';
 import { contacts, conversations, templates, funnels } from '@/data/mockData';
-import { supabase } from '@/integrations/supabase/client';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<TabType>('chat');
@@ -34,19 +32,11 @@ const Index = () => {
       }
 
       try {
-        const { data, error } = await supabase
-          .from('whatsapp_connections')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('status', 'connected')
-          .maybeSingle();
-
-        if (error) {
-          console.error('Error checking connection status:', error);
-        }
-
+        // Since we removed Supabase, let's check localStorage instead
+        const connectionData = localStorage.getItem(`whatsapp_connection_${user.id}`);
+        
         // If no active connection found, show onboarding
-        if (!data) {
+        if (!connectionData) {
           setShowOnboarding(true);
         }
       } catch (err) {

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,7 +37,9 @@ const Auth = () => {
           description: "Por favor, verifique seu email para confirmar o cadastro.",
         });
       } else {
-        localStorage.setItem('user', JSON.stringify({ email }));
+        // Store user with id and email
+        const userId = `user-${Date.now()}`;
+        localStorage.setItem('user', JSON.stringify({ id: userId, email }));
         navigate('/');
       }
     } catch (error: any) {
