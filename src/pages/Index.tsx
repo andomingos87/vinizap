@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { TabType } from '@/components/layout/Header';
@@ -6,48 +7,29 @@ import ConversationPanel from '@/components/chat/ConversationPanel';
 import TemplatesList from '@/components/templates/TemplatesList';
 import FunnelsList from '@/components/funnels/FunnelsList';
 import OnboardingModal from '@/components/onboarding/OnboardingModal';
-import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useAuth } from "@/contexts/AuthContext";
-import { Contact, Message } from '@/types';
-import { contacts, conversations, templates, funnels } from '@/data/mockData';
+import { contacts, templates, funnels } from '@/data/mockData';
+import { useChatState } from '@/hooks/use-chat-state';
+import { useOnboardingState } from '@/hooks/use-onboarding-state';
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
+import { TemplateHandler } from '@/components/chat/TemplateHandler';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<TabType>('chat');
-  const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
-  const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
-  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
-  const [showOnboarding, setShowOnboarding] = useState(false);
-  const [isCheckingConnection, setIsCheckingConnection] = useState(true);
-  const { toast } = useToast();
   const isMobile = useIsMobile();
-  const { user } = useAuth();
-
-  // Check if user has existing WhatsApp connection
-  useEffect(() => {
-    const checkExistingConnection = async () => {
-      if (!user) {
-        setIsCheckingConnection(false);
-        return;
-      }
-
-      try {
-        // Since we removed Supabase, let's check localStorage instead
-        const connectionData = localStorage.getItem(`whatsapp_connection_${user.id}`);
-        
-        // If no active connection found, show onboarding
-        if (!connectionData) {
-          setShowOnboarding(true);
-        }
-      } catch (err) {
-        console.error('Error fetching connection status:', err);
-      } finally {
-        setIsCheckingConnection(false);
-      }
-    };
-
-    checkExistingConnection();
-  }, [user]);
+  const { 
+    selectedContactId, 
+    setSelectedContactId,
+    currentMessages,
+    selectedContact,
+    setSelectedContact,
+    handleSendMessage 
+  } = useChatState();
+  const {
+    showOnboarding,
+    setShowOnboarding,
+    isCheckingConnection
+  } = useOnboardingState();
 
   useEffect(() => {
     if (activeTab !== 'chat') {
@@ -60,70 +42,23 @@ const Index = () => {
     if (selectedContactId) {
       const contact = contacts.find(c => c.id === selectedContactId) || null;
       setSelectedContact(contact);
-      
-      const msgs = conversations[selectedContactId] || [];
-      setCurrentMessages(msgs);
-    } else {
-      setCurrentMessages([]);
     }
   }, [selectedContactId]);
 
   const handleSelectContact = (contactId: string) => {
     setSelectedContactId(contactId);
-    
     if (activeTab !== 'chat') {
       setActiveTab('chat');
     }
   };
 
-  const handleSendMessage = (content: string, type: 'text') => {
-    if (!selectedContactId) return;
-    
-    const newMessage: Message = {
-      id: `new-${Date.now()}`,
-      content,
-      timestamp: new Date(),
-      type,
-      senderId: 'user',
-      status: 'sending'
-    };
-    
-    setCurrentMessages(prev => [...prev, newMessage]);
-    
-    setTimeout(() => {
-      setCurrentMessages(prev => 
-        prev.map(msg => 
-          msg.id === newMessage.id 
-            ? { ...msg, status: 'delivered' } 
-            : msg
-        )
-      );
-    }, 1000);
-  };
-
-  const handleInsertTemplate = (template: any) => {
-    if (activeTab === 'chat' && selectedContactId) {
-      handleSendMessage(template.content, 'text');
-      toast({
-        title: "Template inserido",
-        description: `"${template.name}" adicionado à conversa.`,
-      });
-    } else {
-      toast({
-        title: "Selecione uma conversa",
-        description: "Para usar um template, selecione primeiro uma conversa.",
-      });
-    }
-  };
-
-  const handleTabChange = (tab: TabType) => {
-    setActiveTab(tab);
-  };
-
-  // Handle onboarding completion
-  const handleOnboardingClose = () => {
-    setShowOnboarding(false);
-  };
+  if (isCheckingConnection) {
+    return (
+      <MainLayout activeTab={activeTab} onChangeTab={setActiveTab}>
+        <LoadingSpinner />
+      </MainLayout>
+    );
+  }
 
   const renderMainContent = () => {
     switch (activeTab) {
@@ -154,7 +89,7 @@ const Index = () => {
             <div className="w-full">
               <TemplatesList 
                 templates={templates} 
-                onInsertTemplate={handleInsertTemplate}
+                onInsertTemplate={(template) => handleSendMessage(template.content, 'text')}
               />
             </div>
           </div>
@@ -175,26 +110,20 @@ const Index = () => {
     }
   };
 
-  // Show loading indicator while checking connection status
-  if (isCheckingConnection) {
-    return (
-      <MainLayout activeTab={activeTab} onChangeTab={handleTabChange}>
-        <div className="h-full flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-        </div>
-      </MainLayout>
-    );
-  }
-
   return (
-    <MainLayout activeTab={activeTab} onChangeTab={handleTabChange}>
+    <MainLayout activeTab={activeTab} onChangeTab={setActiveTab}>
       <div className="h-full flex flex-col overflow-hidden">
         {renderMainContent()}
 
-        {/* Onboarding Modal */}
+        <TemplateHandler 
+          activeTab={activeTab}
+          selectedContactId={selectedContactId}
+          onSendMessage={handleSendMessage}
+        />
+
         <OnboardingModal 
           open={showOnboarding} 
-          onOpenChange={handleOnboardingClose} 
+          onOpenChange={() => setShowOnboarding(false)} 
         />
       </div>
     </MainLayout>
