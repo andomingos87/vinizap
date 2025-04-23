@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -34,7 +35,7 @@ const Auth = () => {
       } else {
         const userId = `user-${Date.now()}`;
         localStorage.setItem('user', JSON.stringify({ id: userId, email }));
-        navigate('/admin');
+        navigate('/'); // Redirecionando para a página principal onde estão o chat, templates e funis
       }
     } catch (error: any) {
       toast({
